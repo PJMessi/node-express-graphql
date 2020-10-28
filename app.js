@@ -13,31 +13,31 @@ import bcrypt from 'bcrypt'
 const app = express();
 
 const user = async (userId) => {
-  return User.findById(userId)
-    .then(user => {
-      return {
+  try {
+    const user = await User.findById(userId)
+    return {
         ...user._doc,
-        _id: user.id,
-        createdEvents: events.bind(this, user._doc.createdEvents)
-      }
-    }).catch(err => {
-      throw err
-    })
+        createdEvents: () => events(user._doc.createdEvents)
+    }
+
+  } catch (err) {
+    throw err
+  }
 }
 
-const events = async(eventIds) => {
-  return Event.find({ _id: {$in: eventIds} })
-    .then(events => {
-      return events.map(event => {
-        return {
-          ...event._doc,
-          _id: event.id,
-          creator: user.bind(this, event.creator)
-        }
-      })
-    }).catch(err => {
-      throw err
+const events = async (eventIds) => {
+  try {
+    const events = await Event.find( {_id: {$in: eventIds}} )
+    return events.map(event => {
+      return {
+        ...event._doc,
+        creator: () => user(event.creator)
+      }
     })
+
+  } catch (err) {
+    throw err;
+  }
 }
 
 
@@ -89,19 +89,20 @@ app.use(
     `),
     rootValue: {
 
-      events: () => {
-        return Event.find()
-          .then(events => {
-            return events.map(event => {
-              return {
-                ...event._doc,
-                _id: event.id,
-                creator: user.bind(this, event._doc.creator)
-              }
-            })
-          }).catch(err => {
-            throw err
+      events: async () => {
+
+        try {
+          let events = await Event.find()
+          return events.map(event => {
+            return {
+              ...event._doc,
+              creator: () => user(event._doc.creator)
+            }
           })
+
+        } catch (err) {
+          throw err
+        }
       },
 
 
