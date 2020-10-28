@@ -12,17 +12,38 @@ import bcrypt from 'bcrypt'
 // Initializing express.
 const app = express();
 
-const fetchUser = (userId) => {
-  console.log('fetching creator')
-  return User.findById(userId)
-  .then(user => {
-    console.log('fetched creator')
-    let creator = {...user._doc, _id: user.id}
-    console.log(creator)
-    return creator
-  }). catch(err => {
+const user = async (userId) => {
+  try {
+    let user = await User.findById(userId)
+
+    return {
+      ...user._doc,
+      createdEvents: events.bind(this, user._doc.createdEvents)
+    }
+
+  } catch (err) {
     throw err
-  })
+  }  
+}
+
+const events = async(eventIds) => {
+  try {
+    let events = await Event.find({
+      _id: {$in: eventIds}
+    })
+
+    events.map(event => {
+      return {
+        ...event._doc,
+        creator: user.bind(this, event.creator)
+      }
+    })
+
+    return events
+
+  } catch (err) {
+    throw err
+  }
 }
 
 
@@ -75,14 +96,20 @@ app.use(
     rootValue: {
 
       events: async () => {
-        const events = await Event.find().populate({
-          path: 'creator',
-          populate: {path: 'createdEvents'}
-        })
+          try {
+            const events = await Event.find()
+            return events.map(event => {
+              return {
+                ...event._doc,
+                creator: user.bind(this, event._doc.creator)
+              }
+            })
 
-        return events
-
+          } catch (err) {
+            throw err;
+          }      
       },
+
 
       createEvent: async (args) => {
           try {
