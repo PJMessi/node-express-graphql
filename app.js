@@ -13,37 +13,31 @@ import bcrypt from 'bcrypt'
 const app = express();
 
 const user = async (userId) => {
-  try {
-    let user = await User.findById(userId)
-
-    return {
-      ...user._doc,
-      createdEvents: events.bind(this, user._doc.createdEvents)
-    }
-
-  } catch (err) {
-    throw err
-  }  
+  return User.findById(userId)
+    .then(user => {
+      return {
+        ...user._doc,
+        _id: user.id,
+        createdEvents: events.bind(this, user._doc.createdEvents)
+      }
+    }).catch(err => {
+      throw err
+    })
 }
 
 const events = async(eventIds) => {
-  try {
-    let events = await Event.find({
-      _id: {$in: eventIds}
+  return Event.find({ _id: {$in: eventIds} })
+    .then(events => {
+      return events.map(event => {
+        return {
+          ...event._doc,
+          _id: event.id,
+          creator: user.bind(this, event.creator)
+        }
+      })
+    }).catch(err => {
+      throw err
     })
-
-    events.map(event => {
-      return {
-        ...event._doc,
-        creator: user.bind(this, event.creator)
-      }
-    })
-
-    return events
-
-  } catch (err) {
-    throw err
-  }
 }
 
 
@@ -95,19 +89,19 @@ app.use(
     `),
     rootValue: {
 
-      events: async () => {
-          try {
-            const events = await Event.find()
+      events: () => {
+        return Event.find()
+          .then(events => {
             return events.map(event => {
               return {
                 ...event._doc,
+                _id: event.id,
                 creator: user.bind(this, event._doc.creator)
               }
             })
-
-          } catch (err) {
-            throw err;
-          }      
+          }).catch(err => {
+            throw err
+          })
       },
 
 
