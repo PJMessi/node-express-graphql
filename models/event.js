@@ -25,6 +25,11 @@ const Schema = new Mongoose.Schema({
     type: Date,
     required: true,
   },
+
+  creator: {
+    type: Mongoose.ObjectId,
+    ref: 'User'
+  }
 });
 
 
