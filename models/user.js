@@ -4,7 +4,8 @@ const Schema = new Mongoose.Schema({
     email: {
         type: String,
         required: true,
-        maxlength: 255
+        maxlength: 255,
+        unique: true
     },
 
     password: {

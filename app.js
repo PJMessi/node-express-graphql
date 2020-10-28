@@ -12,7 +12,19 @@ import bcrypt from 'bcrypt'
 // Initializing express.
 const app = express();
 
-const events = []
+const fetchUser = (userId) => {
+  console.log('fetching creator')
+  return User.findById(userId)
+  .then(user => {
+    console.log('fetched creator')
+    let creator = {...user._doc, _id: user.id}
+    console.log(creator)
+    return creator
+  }). catch(err => {
+    throw err
+  })
+}
+
 
 // Setting up Graphql
 app.use(
@@ -25,6 +37,7 @@ app.use(
             description: String!
             price: Float!
             date: String!
+            creator: User!
         }
 
         input EventInput {
@@ -37,6 +50,7 @@ app.use(
         type User {
           _id: ID!
           email: String!
+          createdEvents: [Event!]
         }
 
         input UserInput {
@@ -60,9 +74,14 @@ app.use(
     `),
     rootValue: {
 
-      events: () => {
-        const events = Event.find()
+      events: async () => {
+        const events = await Event.find().populate({
+          path: 'creator',
+          populate: {path: 'createdEvents'}
+        })
+
         return events
+
       },
 
       createEvent: async (args) => {
@@ -71,9 +90,19 @@ app.use(
                   title: args.eventInput.title,
                   description: args.eventInput.description,
                   price: args.eventInput.price,
-                  date: new Date(args.eventInput.date)
+                  date: new Date(args.eventInput.date),
+                  creator: '5f998cbdfe6fe1393cdeac04'
               })
               await event.save()
+
+              // Pushing event to Users
+              const user = await User.findOne({_id: event.creator}).exec()      
+              if (!user){
+                throw new Error('User not found.')
+              }
+              user.createdEvents.push(event)
+              user.save()
+
               return event;
 
           } catch (err) {
@@ -86,14 +115,13 @@ app.use(
             // Hashing password.
             const password = await bcrypt.hash(args.userInput.password, 10);
 
-            let user = new User({
+            const user = new User({
                 email: args.userInput.email,
                 password: password
             })
 
-            user = await user.save()
-
-            return {...user._doc, password:null};
+            await user.save()
+            return user
 
         } catch (err) {
           throw err
