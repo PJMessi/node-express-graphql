@@ -3,7 +3,8 @@ import express from 'express';
 import 'dotenv/config';
 import { graphqlHTTP } from 'express-graphql';
 import { buildSchema } from 'graphql';
-import { build } from 'joi';
+import Mongoose from 'mongoose'
+import Event from './models/event'
 
 
 // Initializing express.
@@ -11,7 +12,7 @@ const app = express();
 
 const events = []
 
-// Setting up Routes.
+// Setting up Graphql
 app.use(
   '/graphql',
   graphqlHTTP({
@@ -46,23 +47,38 @@ app.use(
     `),
     rootValue: {
       events: () => {
+        const events = Event.find()
         return events
       },
-      createEvent: (args) => {
-        const event = {
-            _id: Math.random().toString(),
-            title: args.eventInput.title,
-            description: args.eventInput.description,
-            price: +args.eventInput.price,
-            date: new Date().toISOString(),
-        }
-        events.push(event)
-        return event;
+      createEvent: async (args) => {
+          try {
+              const event = new Event({
+                  title: args.eventInput.title,
+                  description: args.eventInput.description,
+                  price: args.eventInput.price,
+                  date: new Date(args.eventInput.date)
+              })
+              await event.save()
+              return event;
+
+          } catch (err) {
+            throw err
+          }
       },
     },
     graphiql: true,
   })
 );
+
+// Connecting mongo db.
+Mongoose
+  .connect(process.env.MONGO_DB_URL, { useNewUrlParser: true })
+  .then(() => {
+    console.log('Connected to Mongodb.');
+  })
+  .catch(() => {
+    console.error('Could not connect to Mongodb.');
+  });
 
 // Starting Server.
 const port = process.env.APP_PORT || 5000;
