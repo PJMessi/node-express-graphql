@@ -1,4 +1,5 @@
 import Event from '../../models/event';
+import User from '../../models/user';
 import { eventResource } from '../../helpers/model';
 
 const resolvers = {
@@ -13,14 +14,19 @@ const resolvers = {
     }
   },
 
-  createEvent: async (args) => {
+  createEvent: async (args, req) => {
+
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated.')
+    }
+
     try {
       let event = new Event({
         title: args.eventInput.title,
         description: args.eventInput.description,
         price: args.eventInput.price,
         date: new Date(args.eventInput.date),
-        creator: '5f998cbdfe6fe1393cdeac04',
+        creator: req.authUser._id,
       });
       event = await event.save();
 

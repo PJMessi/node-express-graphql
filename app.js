@@ -5,9 +5,13 @@ import { graphqlHTTP } from 'express-graphql';
 import Mongoose from 'mongoose';
 import graphqlSchema from './graphql/schemas/index';
 import graphqlResolvers from './graphql/resolvers/index'
+import authMiddleware from './middlewares/auth'
 
 // Initializing express.
 const app = express();
+
+// Using auth middleware.
+app.use(authMiddleware)
 
 
 // Setting up Graphql

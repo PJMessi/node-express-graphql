@@ -36,9 +36,16 @@ const schema = buildSchema(`
         updatedAt: String!
     }
 
+    type AuthData {
+        user: User!
+        token: String!
+        tokenExpiration: Int!
+    }
+
     type RootQuery {
         events: [Event!]!
         bookings: [Booking!]!
+        login(email: String!, password: String!): AuthData! 
     }
 
     type RootMutation {

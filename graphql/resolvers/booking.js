@@ -1,8 +1,13 @@
 import Booking from '../../models/booking';
+import Event from '../../models/event'
 import { bookingResource } from '../../helpers/model';
 
 const resolvers = {
-  bookings: async () => {
+  bookings: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated.')
+    }
+
     try {
       const bookings = await Booking.find();
       return bookings.map((booking) => {
@@ -13,12 +18,16 @@ const resolvers = {
     }
   },
 
-  bookEvent: async (args) => {
+  bookEvent: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated.')
+    }
+
     try {
       const event = await Event.findOne({ _id: args.eventId });
 
       let booking = new Booking({
-        user: '5f998cbdfe6fe1393cdeac04',
+        user: req.authUser._id,
         event: event,
       });
 
@@ -30,7 +39,11 @@ const resolvers = {
     }
   },
 
-  cancelBooking: async (args) => {
+  cancelBooking: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated.')
+    }
+
     try {
       const booking = await Booking.findOne({ _id: args.bookingId }).populate(
         'event'
