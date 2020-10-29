@@ -2,14 +2,12 @@ import bcrypt from 'bcrypt';
 import Event from '../../models/event';
 import User from '../../models/user';
 import Booking from '../../models/booking';
+import {dateToString} from '../../helpers/date'
 
 const fetchSingleUser = async (userId) => {
   try {
     const user = await User.findById(userId);
-    return {
-      ...user._doc,
-      createdEvents: () => fetchMultipleEvents(user._doc.createdEvents),
-    };
+    return userResource(user);
   } catch (err) {
     throw err;
   }
@@ -18,11 +16,7 @@ const fetchSingleUser = async (userId) => {
 const fetchSingleEvent = async (eventId) => {
   try {
     const event = await Event.findById(eventId);
-    return {
-      ...event._doc,
-      date: new Date(event._doc.date).toISOString(),
-      creator: () => fetchSingleUser(event.creator),
-    };
+    return eventResource(event);
   } catch (err) {
     throw err;
   }
@@ -32,27 +26,48 @@ const fetchMultipleEvents = async (eventIds) => {
   try {
     const events = await Event.find({ _id: { $in: eventIds } });
     return events.map((event) => {
-      return {
-        ...event._doc,
-        date: new Date(event._doc.date).toISOString(),
-        creator: () => fetchSingleUser(event.creator),
-      };
+      return eventResource(event);
     });
   } catch (err) {
     throw err;
   }
 };
 
+
+
+const eventResource = (event) => {
+  return {
+    ...event._doc,
+    date: dateToString(event._doc.date),
+    creator: () => fetchSingleUser(event.creator),
+  };
+};
+
+const bookingResource = (booking) => {
+    return {
+        ...booking._doc,
+        _id: booking._id,
+        user: () => fetchSingleUser(booking._doc.user),
+        event: () => fetchSingleEvent(booking._doc.event),
+        createdAt: dateToString(booking._doc.createdAt),
+        updatedAt: dateToString(booking._doc.updatedAt),
+    }
+}
+
+const userResource = (user) => {
+    return {
+        ...user._doc,
+        createdEvents: () => fetchMultipleEvents(user._doc.createdEvents),
+    }
+}
+
+
 const resolvers = {
   events: async () => {
     try {
       const events = await Event.find();
       return events.map((event) => {
-        return {
-          ...event._doc,
-          date: new Date(event._doc.date).toISOString(),
-          creator: () => fetchSingleUser(event._doc.creator),
-        };
+        return eventResource(event);
       });
     } catch (err) {
       throw err;
@@ -63,14 +78,7 @@ const resolvers = {
     try {
       const bookings = await Booking.find();
       return bookings.map((booking) => {
-        return {
-          ...booking._doc,
-          _id: booking._id,
-          user: () => fetchSingleUser(booking._doc.user),
-          event: () => fetchSingleEvent(booking._doc.event),
-          createdAt: new Date(booking._doc.createdAt).toISOString(),
-          updatedAt: new Date(booking._doc.updatedAt).toISOString(),
-        };
+        return bookingResource(booking);
       });
     } catch (err) {
       throw err;
@@ -96,11 +104,7 @@ const resolvers = {
       user.createdEvents.push(event);
       user.save();
 
-      return {
-        ...event._doc,
-        date: new Date(event._doc.date).toISOString(),
-        creator: () => fetchSingleUser(event._doc.creator),
-      };
+      return eventResource(event);
     } catch (err) {
       throw err;
     }
@@ -117,10 +121,7 @@ const resolvers = {
       });
 
       user = await user.save();
-      return {
-        ...user._doc,
-        createdEvents: () => fetchMultipleEvents(user._doc.createdEvents),
-      };
+      return userResource(user)
     } catch (err) {
       throw err;
     }
@@ -137,14 +138,7 @@ const resolvers = {
 
       booking = await booking.save();
 
-      return {
-        ...booking._doc,
-        _id: booking._id,
-        user: () => fetchSingleUser(booking._doc.user),
-        event: () => fetchSingleEvent(booking._doc.event),
-        createdAt: new Date(booking._doc.createdAt).toISOString(),
-        updatedAt: new Date(booking._doc.updatedAt).toISOString(),
-      };
+      return bookingResource(booking);
     } catch (err) {
       throw err;
     }
@@ -158,11 +152,7 @@ const resolvers = {
       const event = booking.event;
       await Booking.deleteOne({ _id: booking._id });
 
-      return {
-        ...event._doc,
-        date: new Date(event._doc.date).toISOString(),
-        creator: () => fetchSingleUser(event._doc.creator),
-      };
+      return eventResource(event);
     } catch (err) {
       throw err;
     }
