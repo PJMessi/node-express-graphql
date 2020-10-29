@@ -108,24 +108,27 @@ app.use(
 
       createEvent: async (args) => {
           try {
-              const event = new Event({
+              let event = new Event({
                   title: args.eventInput.title,
                   description: args.eventInput.description,
                   price: args.eventInput.price,
                   date: new Date(args.eventInput.date),
                   creator: '5f998cbdfe6fe1393cdeac04'
               })
-              await event.save()
+              event = await event.save()
 
               // Pushing event to Users
-              const user = await User.findOne({_id: event.creator}).exec()      
-              if (!user){
+              const creator = await User.findOne({_id: event.creator}).exec()      
+              if (!creator){
                 throw new Error('User not found.')
               }
-              user.createdEvents.push(event)
-              user.save()
+              creator.createdEvents.push(event)
+              creator.save()
 
-              return event;
+              return {
+                ...event._doc,
+                creator: () => user(event._doc.creator)
+              };
 
           } catch (err) {
             throw err
@@ -143,7 +146,10 @@ app.use(
             })
 
             await user.save()
-            return user
+            return {
+              ...user._doc,
+              createdEvents: () => events(user._doc.createdEvents)
+            }
 
         } catch (err) {
           throw err
