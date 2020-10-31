@@ -11,7 +11,7 @@
         </div>
         <div class="login-menu">
           <ul>
-            <li><a href="register.html">Register</a></li>
+            <li><router-link to="/login">Login</router-link></li>
           </ul>
         </div>
       </div>
@@ -27,7 +27,7 @@
           <div class="col-md-6 col-lg-5">
             <div class="login-box bg-white box-shadow border-radius-10">
               <div class="login-title">
-                <h2 class="text-center text-primary">Login To DeskApp</h2>
+                <h2 class="text-center text-primary">Register</h2>
               </div>
               <form @submit.prevent="loginUser">
                 <div class="input-group custom">
@@ -56,25 +56,7 @@
                     ></span>
                   </div>
                 </div>
-                <div class="row pb-30">
-                  <div class="col-6">
-                    <div class="custom-control custom-checkbox">
-                      <input
-                        type="checkbox"
-                        class="custom-control-input"
-                        id="customCheck1"
-                      />
-                      <label class="custom-control-label" for="customCheck1"
-                        >Remember</label
-                      >
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="forgot-password">
-                      <a href="forgot-password.html">Forgot Password</a>
-                    </div>
-                  </div>
-                </div>
+              
                 <div class="row">
                   <div class="col-sm-12">
                     <div class="input-group mb-0">
@@ -86,21 +68,8 @@
                         class="btn btn-primary btn-lg btn-block"
                         type="submit"
                       >
-                        Sign In
+                        Sign Up
                       </button>
-                    </div>
-                    <div
-                      class="font-16 weight-600 pt-10 pb-10 text-center"
-                      data-color="#707373"
-                    >
-                      OR
-                    </div>
-                    <div class="input-group mb-0">
-                      <a
-                        class="btn btn-outline-primary btn-lg btn-block"
-                        href="register.html"
-                        >Register To Create Account</a
-                      >
                     </div>
                   </div>
                 </div>
@@ -115,7 +84,7 @@
 
 <script>
 export default {
-  name: "Login",
+  name: "Register",
 
   data() {
     return {
@@ -139,22 +108,23 @@ export default {
         password: this.form.data.password,
       };
 
-      // const requestBody = {
-      //   query: `
-      //     mutation {
-      //       createUser(userInput: {email: "${credential.email}", password: "${credential.password}"}) {
+      const requestBody = {
+        query: `
+          mutation {
+            createUser(userInput: {email: "${credential.email}", password: "${credential.password}"}) {
+              _id, email
+            }
+          }
+        `
+      }
 
-      //       }
-      //     }
-      //   `
-      // }
-
-      this.$axios({url: 'http://localhost:3000/graphql', data: credential, method: 'POST', headers: {'Content-Type': 'application/json'} })
+      this.$axios({url: 'http://localhost:3000/graphql', data: JSON.stringify(requestBody), method: 'POST', headers: {'Content-Type': 'application/json'} })
       .then(res => {
         console.log(res)
       })
-      .catch(err => {
-        console.log(err)
+      .catch((err) => { 
+        console.log(err.response)
+        this.$Toast.fire({ icon: 'error', title: 'Something went wrong. Please try again later.' });
       })
 
       console.log(credential);

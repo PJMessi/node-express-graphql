@@ -1,19 +1,19 @@
 <template>
-  <div id="app" :class="{ 'login-page': getCurrentRoute() == 'Login' }">
+  <div id="app" :class="{ 'login-page': (getCurrentRoute() == 'Login' && getCurrentRoute() == 'Register') }">
     <Preloader v-if="false" />
 
-    <Header v-show="getCurrentRoute() != 'Login'" />
+    <Header v-show="(getCurrentRoute() != 'Login' && getCurrentRoute() != 'Register')" />
 
-    <RightSidebar v-show="getCurrentRoute() != 'Login'" />
+    <RightSidebar v-show="(getCurrentRoute() != 'Login' && getCurrentRoute() != 'Register')" />
 
-    <LeftSidebar v-show="getCurrentRoute() != 'Login'" />
+    <LeftSidebar v-show="(getCurrentRoute() != 'Login' && getCurrentRoute() != 'Register')" />
 
     <div
-      v-show="getCurrentRoute() != 'Login'"
+      v-show="(getCurrentRoute() != 'Login' && getCurrentRoute() != 'Register')"
       class="mobile-menu-overlay"
     ></div>
 
-    <div v-if="getCurrentRoute() != 'Login'" class="main-container">
+    <div v-if="(getCurrentRoute() != 'Login' && getCurrentRoute() != 'Register')" class="main-container">
       <div class="pd-ltr-20">
         <router-view />
         <Footer v-if="false" />

@@ -1,7 +1,6 @@
 import User from '../../models/user';
 import bcrypt from 'bcrypt';
 import { userResource } from '../../helpers/model';
-import jwt from 'jsonwebtoken';
 
 const resolvers = {
   createUser: async (args) => {
