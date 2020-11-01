@@ -96,10 +96,10 @@
                       OR
                     </div>
                     <div class="input-group mb-0">
-                      <a
+                      <router-link
                         class="btn btn-outline-primary btn-lg btn-block"
-                        href="register.html"
-                        >Register To Create Account</a
+                        to="/register"
+                        >Register To Create Account</router-link
                       >
                     </div>
                   </div>
@@ -114,6 +114,7 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "Login",
 
@@ -133,31 +134,26 @@ export default {
   },
 
   methods: {
-    loginUser: function () {
-      const credential = {
-        email: this.form.data.email,
-        password: this.form.data.password,
-      };
+    ...mapActions(["login"]),
 
-      // const requestBody = {
-      //   query: `
-      //     mutation {
-      //       createUser(userInput: {email: "${credential.email}", password: "${credential.password}"}) {
+    loginUser: async function () {
+      try {
+        const credential = {
+          email: this.form.data.email,
+          password: this.form.data.password,
+        };
 
-      //       }
-      //     }
-      //   `
-      // }
+        await this.login(credential);
+ 
+      } catch (err) {
 
-      this.$axios({url: 'http://localhost:3000/graphql', data: credential, method: 'POST', headers: {'Content-Type': 'application/json'} })
-      .then(res => {
-        console.log(res)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+        const errorMessage = err.response.data.errors[0].message
 
-      console.log(credential);
+        this.$Toast.fire({
+          icon: "error",
+          title: errorMessage,
+        });
+      }
     },
   },
 };

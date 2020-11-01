@@ -56,7 +56,7 @@
                     ></span>
                   </div>
                 </div>
-              
+
                 <div class="row">
                   <div class="col-sm-12">
                     <div class="input-group mb-0">
@@ -115,17 +115,26 @@ export default {
               _id, email
             }
           }
-        `
-      }
+        `,
+      };
 
-      this.$axios({url: 'http://localhost:3000/graphql', data: JSON.stringify(requestBody), method: 'POST', headers: {'Content-Type': 'application/json'} })
-      .then(res => {
-        console.log(res)
+      this.$axios({
+        url: "http://localhost:3000/graphql",
+        data: JSON.stringify(requestBody),
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       })
-      .catch((err) => { 
-        console.log(err.response)
-        this.$Toast.fire({ icon: 'error', title: 'Something went wrong. Please try again later.' });
-      })
+        .then(() => {
+          this.$router.push('/login')
+        })
+        .catch((err) => {
+          const errorMessage = err.response.data.errors[0].message;
+
+          this.$Toast.fire({
+            icon: "error",
+            title: errorMessage,
+          });
+        });
 
       console.log(credential);
     },
