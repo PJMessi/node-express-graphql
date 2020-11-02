@@ -17,12 +17,14 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue'),
+    meta: { requiresLogout: true },
   },
 
   {
     path: '/register',
     name: 'Register',
     component: () => import('../views/Register.vue'),
+    meta: { requiresLogout: true },
   },
 
   {
@@ -48,6 +50,11 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !store.getters.isLoggedIn) {
     next({
       path: '/login',
+      query: { redirect: to.fullPath },
+    });
+  } else if (to.meta.requiresLogout && store.getters.isLoggedIn) {
+    next({
+      path: '/',
       query: { redirect: to.fullPath },
     });
   } else {
