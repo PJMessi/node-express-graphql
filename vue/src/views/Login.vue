@@ -144,6 +144,8 @@ export default {
         };
 
         await this.login(credential);
+
+        this.$router.push('/')
  
       } catch (err) {
 

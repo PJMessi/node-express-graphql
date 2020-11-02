@@ -50,6 +50,14 @@ const actions = {
         });
     });
   },
+
+  logout({ commit }) {
+    // Removing token from local storage and Vuex.
+    commit('logout');
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    delete axios.defaults.headers.common['Authorization'];
+  },
 };
 
 const mutations = {

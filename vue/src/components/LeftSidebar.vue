@@ -36,7 +36,7 @@
           
 
             <li>
-              <a href="#" class="dropdown-toggle no-arrow">
+              <a href="#" @click.prevent="logoutUser()" class="dropdown-toggle no-arrow">
                 <span class="micon icon-copy ti-power-off"></span><span class="mtext">Logout</span>
               </a>
             </li>
@@ -50,9 +50,20 @@
 
 <script>
 
+import { mapActions } from 'vuex'
+
 export default {
   name: "LeftSidebar",
+  methods: {
+    ...mapActions(['logout']),
 
+    logoutUser() {
+      this.logout()
+
+      this.$router.push('/login')
+    }
+
+  }
 };
 </script>
 

@@ -1,43 +1,58 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import Home from '../views/Home.vue';
+import store from '../store/index.js';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { requiresAuth: true },
   },
 
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue')
+    component: () => import('../views/Login.vue'),
   },
 
   {
     path: '/register',
     name: 'Register',
-    component: () => import('../views/Register.vue')
+    component: () => import('../views/Register.vue'),
   },
 
   {
     path: '/bookings',
     name: 'Booking',
-    component: () => import('../views/Booking.vue')
+    component: () => import('../views/Booking.vue'),
+    meta: { requiresAuth: true },
   },
 
   {
     path: '/events',
     name: 'Event',
-    component: () => import('../views/Event.vue')
-  }
-]
+    component: () => import('../views/Event.vue'),
+    meta: { requiresAuth: true },
+  },
+];
 
 const router = new VueRouter({
-  routes
-})
+  routes,
+});
 
-export default router
+router.beforeEach((to, from, next) => {
+  if (to.meta.requiresAuth && !store.getters.isLoggedIn) {
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath },
+    });
+  } else {
+    next();
+  }
+});
+
+export default router;
