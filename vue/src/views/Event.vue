@@ -1,5 +1,35 @@
 <template>
   <div class="event">
-    <h1>This is an event page</h1>
+    <pageHeader :breadcrumbs="Breadcrumbs">
+      <h4 slot="title">All Event</h4>
+    </pageHeader>
   </div>
 </template>
+
+<script>
+import pageHeader from "../components/resuable/pages_component/pageHeader";
+export default {
+  name: "Event",
+
+  components: { pageHeader },
+
+  data() {
+    return {
+      Breadcrumbs: {
+        items: [
+          {
+            isActive: false,
+            route: "/",
+            title: "Home",
+          }, 
+          {
+            isActive: true,
+            route: null,
+            title: "All Events",
+          }, 
+        ]
+      }
+    }
+  }
+};
+</script>
