@@ -2,14 +2,14 @@
   <div class="leftsidebar">
     <div class="left-side-bar">
       <div class="brand-logo">
-        <a href="index.html">
+        <router-link to="/">
           <img src="vendors/images/deskapp-logo.svg" alt="" class="dark-logo" />
           <img
             src="vendors/images/deskapp-logo-white.svg"
             alt=""
             class="light-logo"
           />
-        </a>
+        </router-link>
         <div class="close-sidebar" data-toggle="left-sidebar-close">
           <i class="ion-close-round"></i>
         </div>
@@ -42,11 +42,6 @@
                     >All Events</router-link
                   >
                 </li>
-                <li>
-                  <a href="#" data-toggle="modal" data-target="#addEventModal">
-                    Add New
-                  </a>
-                </li>
               </ul>
             </li>
 
@@ -72,26 +67,14 @@
         </div>
       </div>
     </div>
-
-    <modal modalId="addEventModal">
-      <slot name="header">asdf</slot>
-      <slot name="body">asdf</slot>
-      <slot name="footer">asdf</slot>
-    </modal>
-
   </div>
 </template>
 
 <script>
 import { mapActions } from "vuex";
-import modal from "./resuable/modals/modal";
 
 export default {
   name: "LeftSidebar",
-
-  components: {
-    modal,
-  },
 
   data() {
     return {

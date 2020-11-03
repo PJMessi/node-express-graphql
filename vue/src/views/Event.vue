@@ -1,7 +1,7 @@
 <template>
   <div class="event">
     <pageHeader :breadcrumbs="Breadcrumbs">
-      <slot name="title">Events</slot>
+      <h4 slot="title">All Event</h4>
     </pageHeader>
   </div>
 </template>

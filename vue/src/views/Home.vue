@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <pageHeader :breadcrumbs="Breadcrumbs">
-      <slot name="title">Home</slot>
+      <h4 slot="title">Home</h4>
     </pageHeader>
   </div>
 </template>
