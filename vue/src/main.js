@@ -20,6 +20,11 @@ const Toast = Swal.mixin({
 Vue.prototype.$Toast = Toast
 
 Vue.prototype.$axios = axios
+if (localStorage.getItem('token')) {
+  Vue.prototype.$axios.defaults.headers.common = {
+    "Authorization": localStorage.getItem('token')
+  };
+}
 
 Vue.config.productionTip = false
 

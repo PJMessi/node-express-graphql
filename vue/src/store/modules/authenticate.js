@@ -40,6 +40,10 @@ const actions = {
             JSON.stringify(res.data.data.login.user)
           );
 
+          axios.defaults.headers.common = {
+            "Authorization": res.data.data.login.token
+          };
+
           commit('auth_success', res.data.data.login);
 
           resolve(res);
