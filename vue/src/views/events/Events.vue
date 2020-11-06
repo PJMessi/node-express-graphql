@@ -36,7 +36,7 @@
                             {{ event._id }}
                         </td>
                         <td>{{ event.title }}</td>
-                        <td>{{ event.date }}</td>
+                        <td>{{ event.date | formatISOString }}</td>
                         <td>Rs. {{ event.price }}</td>
                         <td>{{ event.creator.email }}</td>
                         <td>
@@ -66,6 +66,7 @@
         <eventItem
             :showEventModalId="showEventModalId"
             :event="focusedEvent"
+            @eventDeleted="removeDeletedEvent"
         />
     </div>
 </template>
@@ -166,6 +167,13 @@ export default {
         appendAddedEvent: function (newEvent) {
             this.eventsList.push(newEvent);
         },
+
+        removeDeletedEvent: function(deletedEvent) {
+            console.log(11111111111111)
+            // removing booking from the list
+            var eventIndex = this.eventsList.findIndex((item) => { return item._id == deletedEvent._id })
+            if (eventIndex !== -1) this.eventsList.splice(eventIndex, 1);
+        }
     },
 };
 </script>

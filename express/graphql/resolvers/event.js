@@ -43,6 +43,16 @@ const resolvers = {
       throw err;
     }
   },
+
+  deleteEvent: async(args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthenticated.')
+    }
+    
+    await Event.deleteOne({_id: args.eventId, creator: req.authUser._id})
+
+    return true
+  }
 };
 
 module.exports = resolvers;

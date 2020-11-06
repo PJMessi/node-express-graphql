@@ -5,6 +5,7 @@ import store from './store';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import VueProgressBar from 'vue-progressbar';
+import './filters/filters';
 
 // Vue progressbar
 const options = {

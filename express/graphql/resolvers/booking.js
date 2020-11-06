@@ -26,6 +26,12 @@ const resolvers = {
     try {
       const event = await Event.findOne({ _id: args.eventId });
 
+      // checking if user already has booked the event.
+      const hasALreadyBooked = await Booking.findOne({event: event._id, user: req.authUser._id})
+      if (hasALreadyBooked) {
+        throw new Error('Event already booked.')
+      }
+
       if (req.authUser._id == event.creator) {
         throw new Error('User cannot book his own event.')
       }

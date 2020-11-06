@@ -24,7 +24,7 @@
                     <tr v-for="booking in bookingsList" :key="booking._id">
                         <td>{{ booking._id }}</td>
                         <td>{{ booking.event.title }}</td>
-                        <td>{{ booking.createdAt }}</td>
+                        <td>{{ booking.createdAt | formatISOString }}</td>
                         <td>
                             <button class="btn btn-danger" @click="cancelBooking(booking)">Cancel</button>
                         </td>
