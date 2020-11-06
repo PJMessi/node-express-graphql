@@ -99,9 +99,9 @@
 </template>
 
 <script>
-import pageHeader from "../components/resuable/pages_component/pageHeader";
-import pageBody from "../components/resuable/pages_component/pageBody";
-import modal from "../components/resuable/modals/modal";
+import pageHeader from "../../components/resuable/pages_component/pageHeader";
+import pageBody from "../../components/resuable/pages_component/pageBody";
+import modal from "../../components/resuable/modals/modal";
 
 export default {
   name: "Event",
