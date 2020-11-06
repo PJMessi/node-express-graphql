@@ -104,6 +104,8 @@ export default {
         },
 
         createEvent: function () {
+            this.$Progress.start();
+
             const requestUrl = "http://localhost:3000/graphql";
             const requestBody = {
                 query: `
@@ -139,6 +141,8 @@ export default {
                 });
 
                 this.resetForm();
+
+                this.$Progress.finish()
             })
             .catch((err) => {
                 const errorMessage = err.response.data.errors[0].message;
@@ -150,6 +154,8 @@ export default {
                 });
                 
                 console.log(errorMessage);
+
+                this.$Progress.fail()
             });
         },
     },

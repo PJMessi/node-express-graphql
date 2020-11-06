@@ -1,5 +1,7 @@
 <template>
   <div id="app" :class="{ 'login-page': (getCurrentRoute() == 'Login' && getCurrentRoute() == 'Register') }">
+    <vue-progress-bar></vue-progress-bar>
+
     <Preloader v-if="false" />
 
     <Header v-show="(getCurrentRoute() != 'Login' && getCurrentRoute() != 'Register')" />
