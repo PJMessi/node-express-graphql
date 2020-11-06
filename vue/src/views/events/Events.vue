@@ -26,15 +26,31 @@
                         <th scope="col">Date</th>
                         <th scope="col">Price</th>
                         <th scope="col">Creator</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="eventsList.length > 0">
                     <tr v-for="event in eventsList" :key="event._id">
                         <td>{{ event._id }}</td>
                         <td>{{ event.title }}</td>
                         <td>{{ event.date }}</td>
                         <td>Rs. {{ event.price }}</td>
                         <td>{{ event.creator.email }}</td>
+                        <td>
+                            <button 
+                                class="btn btn-info"                 
+                                data-toggle="modal"
+                                :data-target="`#${showEventModalId}`"
+                                @click="focusedEvent = event"
+                            >   
+                                Show
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+                <tbody v-else>
+                    <tr>
+                        <td colspan="5" style="text-align: center">No events found.</td>
                     </tr>
                 </tbody>
             </table>
@@ -44,6 +60,10 @@
             :addEventModalId="addEventModalId"
             @eventAdded="appendAddedEvent"
         />
+        <eventItem
+            :showEventModalId="showEventModalId"
+            :event="focusedEvent"
+        />
     </div>
 </template>
 
@@ -51,11 +71,12 @@
 import pageHeader from "../../components/resuable/pages_component/pageHeader";
 import pageBody from "../../components/resuable/pages_component/pageBody";
 import addEvent from "./AddEvent";
+import eventItem from "./EventItem";
 
 export default {
     name: "Events",
 
-    components: { pageHeader, pageBody, addEvent },
+    components: { pageHeader, pageBody, addEvent, eventItem },
 
     created() {
         this.fetchEvents();
@@ -64,6 +85,7 @@ export default {
     data() {
         return {
             addEventModalId: "addEventModal",
+            showEventModalId: "showEventModal",
 
             Breadcrumbs: {
                 items: [
@@ -81,6 +103,19 @@ export default {
             },
 
             eventsList: [],
+
+            focusedEvent: {
+                _id: '',
+                title: '',
+                price: '',
+                date: '',
+                description: '',
+                creator: {
+                    _id: '',
+                    email: ''
+                }
+
+            }
         };
     },
 
