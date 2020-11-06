@@ -30,7 +30,7 @@ const routes = [
   {
     path: '/bookings',
     name: 'Bookings',
-    component: () => import('../views/bookings/Booking.vue'),
+    component: () => import('../views/bookings/Bookings.vue'),
     meta: { requiresAuth: true },
   },
 

@@ -1,6 +1,6 @@
 import Booking from '../../models/booking';
 import Event from '../../models/event'
-import { bookingResource } from '../../helpers/model';
+import { bookingResource, eventResource } from '../../helpers/model';
 
 const resolvers = {
   bookings: async (args, req) => {
@@ -9,7 +9,7 @@ const resolvers = {
     }
 
     try {
-      const bookings = await Booking.find();
+      const bookings = await Booking.find({user: req.authUser._id});
       return bookings.map((booking) => {
         return bookingResource(booking);
       });
@@ -25,6 +25,10 @@ const resolvers = {
 
     try {
       const event = await Event.findOne({ _id: args.eventId });
+
+      if (req.authUser._id == event.creator) {
+        throw new Error('User cannot book his own event.')
+      }
 
       let booking = new Booking({
         user: req.authUser._id,
@@ -45,9 +49,14 @@ const resolvers = {
     }
 
     try {
-      const booking = await Booking.findOne({ _id: args.bookingId }).populate(
+      const booking = await Booking.findOne({ _id: args.bookingId, user: req.authUser._id }).populate(
         'event'
       );
+
+      if (!booking) {
+        throw new Error('booking not found')
+      }
+
       const event = booking.event;
       await Booking.deleteOne({ _id: booking._id });
 

@@ -32,7 +32,7 @@
                 
             </div>
 
-            <button v-if="event.creator._id != authUser._id" @click="bookEvent" :disabled="isLoading" slot="footer" class="btn btn-primary">Book</button>
+            <button v-if="event.creator._id != authUser._id"  @click="bookEvent" :disabled="isLoading" slot="footer" class="btn btn-primary">Book</button>
         </modal>
     </div>
 </template>

@@ -25,6 +25,9 @@
                         <td>{{ booking._id }}</td>
                         <td>{{ booking.event.title }}</td>
                         <td>{{ booking.createdAt }}</td>
+                        <td>
+                            <button class="btn btn-danger" @click="cancelBooking(booking)">Cancel</button>
+                        </td>
                     </tr>
                 </tbody>
                 <tbody v-else>
@@ -68,7 +71,9 @@ export default {
                 ],
             },
 
-            bookingsList: []
+            bookingsList: [],
+
+            isLoading: false,
         };
     },
 
@@ -106,6 +111,52 @@ export default {
                     console.log(errorMessage);
                 });
         },
+
+        cancelBooking: function(booking) {
+            this.isLoading = true;
+
+            const requestBody = {
+                query: `
+                    mutation {
+                        cancelBooking (bookingId: "${booking._id}") {
+                            _id
+                        }
+                    }               
+                `,
+            };
+
+            this.$axios({
+                url: "http://localhost:3000/graphql",
+                data: requestBody,
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+            })
+                .then(() => {
+                    // removing booking from the list
+                    var bookingIndex = this.bookingsList.findIndex((item) => { return item._id == booking._id })
+                    if (bookingIndex !== -1) this.bookingsList.splice(bookingIndex, 1);
+                    
+                    // generating success message.
+                    this.$Toast.fire({
+                        icon: "success",
+                        title: "Booking cancelled.",
+                    });
+
+                    this.isLoading = false
+                })
+                .catch((err) => {
+                    const errorMessage = err.response.data.errors[0].message;
+
+                    // generating error message.
+                    this.$Toast.fire({
+                        icon: "error",
+                        title: "Failed to cancel booking.",
+                    });
+
+                    console.log(errorMessage);
+                    this.isLoading = false
+                });
+        }
     },
 };
 </script>
