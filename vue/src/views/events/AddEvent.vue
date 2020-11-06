@@ -66,6 +66,7 @@
             <button
                 slot="footer"
                 class="btn btn-primary"
+                :disabled="isLoading"
                 @click="createEvent()"
             >
                 Create
@@ -92,6 +93,8 @@ export default {
                 price: "",
                 date: "",
             },
+
+            isLoading: false
         };
     },
 
@@ -104,7 +107,7 @@ export default {
         },
 
         createEvent: function () {
-            this.$Progress.start();
+            this.isLoading = true
 
             const requestUrl = "http://localhost:3000/graphql";
             const requestBody = {
@@ -142,7 +145,7 @@ export default {
 
                 this.resetForm();
 
-                this.$Progress.finish()
+                this.isLoading = false
             })
             .catch((err) => {
                 const errorMessage = err.response.data.errors[0].message;
@@ -155,7 +158,7 @@ export default {
                 
                 console.log(errorMessage);
 
-                this.$Progress.fail()
+                this.isLoading = false
             });
         },
     },

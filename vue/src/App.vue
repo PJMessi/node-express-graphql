@@ -43,11 +43,51 @@ export default {
     Preloader,
   },
 
+  created() {
+    this.interceptAxios401()
+  },
+
   methods: {
     getCurrentRoute() {
       return this.$route.name;
     },
-  },
+
+    interceptAxios401() {
+      let store = this.$store
+      let router = this.$router
+
+      // Intercepting axios request.
+      this.$axios.interceptors.request.use(config => {
+          this.$Progress.start(); // Starting progressbar.
+          return config;
+      });
+
+      // Intercepting axios response.
+      this.$axios.interceptors.response.use(
+
+        // intercepting success response.
+        (response) => {
+          this.$Progress.finish(); // Finishing progressbar.
+          return Promise.resolve(response);
+        },
+
+        // intercepting failed response.
+        (error) => {
+          this.$Progress.fail() // Failing Progressbar.
+
+          // if authentication error, resetting auth tokend and redirecting to login page.
+          if (401 === error.response.status) {
+            store.dispatch('reset')
+            router.push('/login')
+
+          } else {
+            return Promise.reject(error);
+          }
+        }  
+      );
+
+    }
+  }
 };
 </script>
 

@@ -129,7 +129,6 @@ export default {
 
     methods: {
         fetchEvents: function () {
-            this.$Progress.start();
 
             const requestBody = {
                 query: `
@@ -150,7 +149,6 @@ export default {
             .then((res) => {
                 const eventsList = res.data.data.events;
                 this.eventsList = eventsList;
-                this.$Progress.finish();
             })
             .catch((err) => {
                 const errorMessage = err.response.data.errors[0].message;
@@ -162,7 +160,6 @@ export default {
                 });
 
                 console.log(errorMessage)
-                this.$Progress.fail();
             });
         },
 
