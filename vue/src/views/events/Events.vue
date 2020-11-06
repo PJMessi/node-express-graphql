@@ -30,8 +30,11 @@
                     </tr>
                 </thead>
                 <tbody v-if="eventsList.length > 0">
-                    <tr v-for="event in eventsList" :key="event._id">
-                        <td>{{ event._id }}</td>
+                    <tr v-for="event in eventsList" :key="event._id" :class="{'table-info': authUser._id == event.creator._id}">
+                        <td>
+                            <i v-if="authUser._id == event.creator._id" class="icon-copy fi-star mr-2"></i>
+                            {{ event._id }}
+                        </td>
                         <td>{{ event.title }}</td>
                         <td>{{ event.date }}</td>
                         <td>Rs. {{ event.price }}</td>
@@ -72,6 +75,7 @@ import pageHeader from "../../components/resuable/pages_component/pageHeader";
 import pageBody from "../../components/resuable/pages_component/pageBody";
 import addEvent from "./AddEvent";
 import eventItem from "./EventItem";
+import { mapGetters } from 'vuex'
 
 export default {
     name: "Events",
@@ -80,6 +84,10 @@ export default {
 
     created() {
         this.fetchEvents();
+    },
+
+    computed: {
+        ...mapGetters(['authUser'])
     },
 
     data() {

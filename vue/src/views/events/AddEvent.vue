@@ -110,7 +110,7 @@ export default {
                     mutation {
                         createEvent(eventInput:{
                         title: "${this.newEvent.title}", 
-                        description: "$${this.newEvent.description}", 
+                        description: "${this.newEvent.description}", 
                         price: ${+this.newEvent.price}, 
                         date: "${this.newEvent.date}"}
                         ) {
